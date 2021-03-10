@@ -11,9 +11,9 @@ import UIKit
 class EmojiTableViewController: UITableViewController {
     
     var emojiList = [
-    Emoji(emoji: "🥰", name: "Love", description: "Lets love each other", isFavourite: false),
-    Emoji(emoji: "😘", name: "Kiss", description: "Lets kiss each other", isFavourite: false),
-    Emoji(emoji: "💜", name: "Heart", description: "Heart is violett", isFavourite: false),
+        Emoji(emoji: "🥰", name: "Love", description: "Lets love each other", isFavourite: false),
+        Emoji(emoji: "😘", name: "Kiss", description: "Lets kiss each other", isFavourite: false),
+        Emoji(emoji: "💜", name: "Heart", description: "Heart is violett", isFavourite: false),
     ]
     
     override func viewDidLoad() {
@@ -27,6 +27,40 @@ class EmojiTableViewController: UITableViewController {
         self.title = "Emoji Reader"
     }
     
+    
+    @IBAction func unwindSegue(segue: UIStoryboardSegue) {
+        guard segue.identifier == "saveSegue" else {
+            return
+        }
+        let sourceVC = segue.source as! NewEmojiTableViewController
+        let emoji = sourceVC.emoji
+        if let selectedIndexPath = tableView.indexPathForSelectedRow {
+            emojiList[selectedIndexPath.row] = emoji
+            tableView.reloadRows(at: [selectedIndexPath], with: .fade)
+            
+        }else {
+            
+            let newIndexPath = IndexPath(row: emojiList.count, section: 0)
+            
+            emojiList.append(emoji)
+            tableView.insertRows(at: [newIndexPath], with: .fade)
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+        
+        guard segue.identifier == "editEmoji" else {
+            return
+        }
+        
+        let indexPath = tableView.indexPathForSelectedRow!
+        let emoji = emojiList[indexPath.row]
+        let navigationVC = segue.destination as! UINavigationController
+        let newEmojiVC = navigationVC.topViewController as! NewEmojiTableViewController
+        newEmojiVC.emoji = emoji
+        newEmojiVC.title = "Edit"
+    }
     // MARK: - Table view data source
     
     override func numberOfSections(in tableView: UITableView) -> Int {
